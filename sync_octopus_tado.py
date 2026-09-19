@@ -465,7 +465,7 @@ async def browser_login(url, username, password):
         await page.screenshot(path="screenshot.png")
 
         await page.wait_for_selector(
-            ".text-center.message-screen.b-bubble-screen__spaced", timeout=10000
+            ".text-center.message-screen.b-bubble-screen__spaced", timeout=30000
         )
 
         # Take a screenshot (optional)
