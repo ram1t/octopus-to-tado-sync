@@ -2,9 +2,10 @@ name: Run Tado-Octopus Script
 
 on:
   workflow_dispatch:
+
   schedule:
-    # Runs every Wednesday at 12pm UTC
-    - cron: '0 12 * * 3'
+    # Every Wednesday at 12:00 UTC
+    - cron: "0 12 * * 3"
 
 jobs:
   run_script:
@@ -17,25 +18,36 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.x'
+          python-version: "3.x"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Initialise playwright
-        run: |
-          playwright install chromium
-          playwright install-deps chromium
-
-      - name: Run Python script
+      - name: Run Tado-Octopus sync
         env:
           OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_KEY }}
           OCTOPUS_ACCOUNT_NUMBER: ${{ secrets.OCTOPUS_ACCOUNT_NUMBER }}
           OCTOPUS_MPRN: ${{ secrets.OCTOPUS_MPRN }}
           OCTOPUS_GAS_SERIAL: ${{ secrets.OCTOPUS_GAS_SERIAL }}
-          TADO_EMAIL: ${{ secrets.TADO_EMAIL }}
-          TADO_PASSWORD: ${{ secrets.TADO_PASSWORD }}
+
+          TADO_REFRESH_TOKEN: ${{ secrets.TADO_REFRESH_TOKEN }}
+
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+
         run: |
           python sync_octopus_tado.py
+
+      - name: Update rotated Tado refresh token
+        if: success() && hashFiles('/tmp/new_tado_refresh_token') != ''
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          echo "Updating rotated Tado refresh token..."
+
+          gh secret set TADO_REFRESH_TOKEN \
+            --repo "$GITHUB_REPOSITORY" \
+            < /tmp/new_tado_refresh_token
+
+          echo "Tado refresh token repository secret updated successfully."
