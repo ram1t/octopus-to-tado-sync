@@ -496,38 +496,17 @@ def complete_tado_device_activation(tado):
     # Obtain client ID.
     # --------------------------------------------------------
 
-    client_id = getattr(
-        http_object,
-        "_client_id",
-        None
+    # Tado's officially documented OAuth device-flow client ID.
+    #
+    # Tado documents this client ID for the REST API device
+    # authentication flow.
+    client_id = (
+        "1bb50063-6b0c-4d11-bd99-387f4a91cc46"
     )
 
-    if not client_id:
-
-        possible_names = [
-            "client_id",
-            "_clientId",
-            "clientId",
-        ]
-
-        for name in possible_names:
-
-            candidate = getattr(
-                http_object,
-                name,
-                None
-            )
-
-            if candidate:
-                client_id = candidate
-                break
-
-    if not client_id:
-
-        raise RuntimeError(
-            "Could not determine the Tado OAuth client ID "
-            "from PyTado."
-        )
+    print(
+        "Using Tado's documented OAuth client ID."
+    )
 
     print(
         "Tado OAuth client ID obtained."
