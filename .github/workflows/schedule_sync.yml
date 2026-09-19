@@ -9,29 +9,33 @@ on:
 jobs:
   run_script:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v6
+      - name: Checkout code
+        uses: actions/checkout@v6
 
-    - name: Set up Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: '3.x'
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    - name: Initialise playwright
-      run: |
-        playwright install
+      - name: Initialise playwright
+        run: |
+          playwright install chromium
+          playwright install-deps chromium
 
-    - name: Run Python script
-      run: |
-        python sync_octopus_tado.py \
-          --tado-email "${{ secrets.TADO_EMAIL }}" \
-          --tado-password "${{ secrets.TADO_PASSWORD }}" \
-          --mprn "${{ secrets.OCTOPUS_MPRN }}" \
-          --gas-serial-number "${{ secrets.OCTOPUS_GAS_SERIAL }}" \
-          --octopus-api-key "${{ secrets.OCTOPUS_API_KEY }}"
+      - name: Run Python script
+        env:
+          OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_KEY }}
+          OCTOPUS_ACCOUNT_NUMBER: ${{ secrets.OCTOPUS_ACCOUNT_NUMBER }}
+          OCTOPUS_MPRN: ${{ secrets.OCTOPUS_MPRN }}
+          OCTOPUS_GAS_SERIAL: ${{ secrets.OCTOPUS_GAS_SERIAL }}
+          TADO_EMAIL: ${{ secrets.TADO_EMAIL }}
+          TADO_PASSWORD: ${{ secrets.TADO_PASSWORD }}
+        run: |
+          python sync_octopus_tado.py
