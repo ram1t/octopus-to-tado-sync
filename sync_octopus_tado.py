@@ -18,7 +18,8 @@ from PyTado.interface import Tado
 OCTOPUS_API_KEY = os.environ.get("OCTOPUS_API_KEY")
 OCTOPUS_ACCOUNT_NUMBER = os.environ.get("OCTOPUS_ACCOUNT_NUMBER")
 
-TADO_USERNAME = os.environ.get("TADO_USERNAME")
+TADO_USERNAME = os.environ.get("TADO_EMAIL")
+
 TADO_PASSWORD = os.environ.get("TADO_PASSWORD")
 
 # Your gas details
@@ -28,9 +29,10 @@ MPRN = os.environ.get(
 )
 
 GAS_METER_SERIAL_NUMBER = os.environ.get(
-    "OCTOPUS_GAS_METER_SERIAL",
+    "OCTOPUS_GAS_SERIAL",
     "7448400807"
 )
+
 
 TADO_TOKEN_FILE = "/tmp/tado_refresh_token"
 
